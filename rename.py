@@ -24,16 +24,16 @@ def get_files(dir):
     # List all files in the directory
     for file in os.listdir(dir):
         f = "{}{}".format(dir,file)
-        # Open image file for reading (binary mode)
-        with open(f, 'rb') as fh:
-            tags = exifread.process_file(fh)
         try:
+            # Open image file for reading (binary mode)
+            with open(f, 'rb') as fh:
+                tags = exifread.process_file(fh)
     	    origin = str(tags['EXIF DateTimeOriginal']).split()[0]
     	    mtime = origin.replace(':','-')
         # If the DateTimeOriginal key doesn't exist we couldn't get
         # the exif data, so we'll just use last modified time as
         # the creation time.  It's as accurate as we can get.
-        except (KeyError, IndexError):
+        except (KeyError, IndexError, UnicodeEncodeError):
             epoch = os.path.getmtime(f)
             mtime = time.strftime('%Y-%m-%d', time.localtime(epoch))
         if not mtime in files:
